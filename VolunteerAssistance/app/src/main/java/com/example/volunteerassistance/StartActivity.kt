@@ -34,14 +34,16 @@ class StartActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
-                Screen()
+                Screen { isHelp ->
+                    State.isHelp = isHelp
+                }
             }
         }
     }
 }
 
 @Composable
-fun Screen() {
+fun Screen(onButtonClick: (Boolean) -> Unit) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -52,7 +54,7 @@ fun Screen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { },
+                onClick = { onButtonClick(true) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -62,7 +64,7 @@ fun Screen() {
             }
 
             Button(
-                onClick = { },
+                onClick = { onButtonClick(false) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,6 +80,6 @@ fun Screen() {
 @Composable
 fun ScreenPreview() {
     VolunteerAssistanceTheme {
-        Screen()
+        Screen { }
     }
 }
