@@ -36,6 +36,9 @@ class StartActivity : ComponentActivity() {
             VolunteerAssistanceTheme {
                 Screen { isHelp ->
                     State.isHelp = isHelp
+
+                    val intent = Intent(this, PreRegistrationActivity::class.java)
+                    startActivity(intent)
                 }
             }
         }
