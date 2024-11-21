@@ -24,7 +24,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PreRegistrationActivity">
+            android:name=".PreRegistrationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.VolunteerAssistance">
         </activity>
     </application>
 

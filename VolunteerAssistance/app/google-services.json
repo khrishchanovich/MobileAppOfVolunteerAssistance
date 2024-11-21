@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "263452095121",
+    "project_id": "volunteerassistance-9cfda",
+    "storage_bucket": "volunteerassistance-9cfda.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263452095121:android:d074e9797504ebc2a28530",
+        "android_client_info": {
+          "package_name": "com.example.volunteerassistance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKNt3gYMmjQXkAQYZ1yLOCLdJ8CBCMnnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
