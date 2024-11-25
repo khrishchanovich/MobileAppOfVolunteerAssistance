@@ -1,7 +1,10 @@
 package com.example.volunteerassistance
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.example.volunteerassistance.ui.theme.State
 
 class RegistrationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +41,13 @@ class RegistrationActivity : ComponentActivity() {
 
 @Composable
 fun RegistrationScreen(onNextClick: () -> Unit) {
-    var name by remember { mutableStateOf("") }
-    var surname by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val auth = Firebase.auth
+    val db = FirebaseFirestore.getInstance()
+
+    val nameState = remember { mutableStateOf("") }
+    val surnameState = remember { mutableStateOf("") }
+    val emailState = remember { mutableStateOf("") }
+    val passwordState = remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Scaffold { padding ->
@@ -48,27 +59,27 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+            TextField(
+                value = nameState.value,
+                onValueChange = {  nameState.value = it },
                 label = { Text("Имя") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
             )
 
-            OutlinedTextField(
-                value = surname,
-                onValueChange = { surname = it },
+            TextField(
+                value = surnameState.value,
+                onValueChange = { surnameState.value = it },
                 label = { Text("Фамилия") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
             )
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+            TextField(
+                value = emailState.value,
+                onValueChange = { emailState.value = it },
                 label = { Text("Электронная почта") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -78,9 +89,9 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
                 )
             )
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+            TextField(
+                value = passwordState.value,
+                onValueChange = { passwordState.value = it },
                 label = { Text("Пароль") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -93,14 +104,15 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
 
             Button(
                 onClick = {
-                    if (name.isBlank() || surname.isBlank() || email.isBlank() || password.isBlank()) {
+                    if (nameState.value.isBlank() || surnameState.value.isBlank() || emailState.value.isBlank() || passwordState.value.isBlank()) {
                         Toast.makeText(context, "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT).show()
-                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailState.value).matches()) {
                         Toast.makeText(context, "Введите корректный email", Toast.LENGTH_SHORT).show()
-                    } else if (password.length < 6) {
+                    } else if (passwordState.value.length < 8) {
                         Toast.makeText(context, "Пароль должен содержать не менее 6 символов", Toast.LENGTH_SHORT).show()
                     } else {
-                        onNextClick()
+                        signUp(auth, db, nameState.value, surnameState.value, emailState.value, passwordState.value, context)
+
                     }
                 },
                 modifier = Modifier
@@ -120,6 +132,43 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
             }
         }
     }
+}
+
+private fun signUp(auth: FirebaseAuth, db: FirebaseFirestore, name: String, surname: String, email: String, password: String, context: Context) {
+    auth.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener {
+            if (it.isSuccessful) {
+                Log.d("Success", "Sign Up successful")
+                Toast.makeText(context, "Успешно", Toast.LENGTH_SHORT).show()
+
+                val user = auth.currentUser
+
+                if (user != null) {
+                    val userData = hashMapOf(
+                        "user_id" to user.uid,
+                        "name" to name,
+                        "surname" to surname,
+                        "email" to email,
+                        "is_help" to State.isHelp
+                    )
+
+                    db.collection("users")
+                        .document(user.uid)
+                        .set(userData)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Data saved successfully")
+                            Toast.makeText(context, "Регистрация успешна!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error writing data: ${e.message}")
+                            Toast.makeText(context, "Ошибка сохранения данных: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            } else {
+                Log.d("Fail", "Sign Up failure")
+                Toast.makeText(context, "Ошибище", Toast.LENGTH_SHORT).show()
+            }
+        }
 }
 
 
