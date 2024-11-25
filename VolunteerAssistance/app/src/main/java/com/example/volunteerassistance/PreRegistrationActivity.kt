@@ -1,5 +1,6 @@
 package com.example.volunteerassistance
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,14 +31,19 @@ class PreRegistrationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
-                PreRegistrationScreen()
+                PreRegistrationScreen(
+                    onEmailRegistrationClick = {
+                        val intent = Intent(this, RegistrationActivity::class.java)
+                        startActivity(intent)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun PreRegistrationScreen() {
+fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit ) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -48,7 +54,7 @@ fun PreRegistrationScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { },
+                onClick = { onEmailRegistrationClick() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,6 +88,8 @@ fun PreRegistrationScreen() {
 @Composable
 fun PreRegistrationScreenPreview() {
     VolunteerAssistanceTheme {
-        PreRegistrationScreen()
+        PreRegistrationScreen(
+            onEmailRegistrationClick = { }
+        )
     }
 }
