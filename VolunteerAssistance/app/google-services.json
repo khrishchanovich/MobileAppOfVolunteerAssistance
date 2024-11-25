@@ -12,7 +12,20 @@
           "package_name": "com.example.volunteerassistance"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "263452095121-31t7mae0hmbnveldtumrp77f4kk7uvvg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.volunteerassistance",
+            "certificate_hash": "14252a865fb9fee3f3e368aa30f943452793a8b0"
+          }
+        },
+        {
+          "client_id": "263452095121-tuofcb7117os6uohecj5lhrgbknj8i86.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCKNt3gYMmjQXkAQYZ1yLOCLdJ8CBCMnnY"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "263452095121-tuofcb7117os6uohecj5lhrgbknj8i86.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
