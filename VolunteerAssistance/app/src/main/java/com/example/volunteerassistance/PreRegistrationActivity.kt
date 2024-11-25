@@ -1,5 +1,6 @@
 package com.example.volunteerassistance
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,14 +31,19 @@ class PreRegistrationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
-                PreRegistrationScreen()
+                PreRegistrationScreen(
+                    onEmailRegistrationClick = {
+                        val intent = Intent(this, RegistrationActivity::class.java)
+                        startActivity(intent)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun PreRegistrationScreen() {
+fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit ) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -48,7 +54,7 @@ fun PreRegistrationScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { },
+                onClick = { onEmailRegistrationClick() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -69,21 +75,7 @@ fun PreRegistrationScreen() {
                     .height(80.dp)
             ) {
                 Text(
-                    "Регистрация при помощи Google",
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center)
-            }
-
-            Button (
-                onClick = { },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-            ) {
-                Text(
-                    "Регистрация при помощи Yandex",
+                    "Регистрация при помощи номера телефона",
                     fontSize = 18.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center)
@@ -96,6 +88,8 @@ fun PreRegistrationScreen() {
 @Composable
 fun PreRegistrationScreenPreview() {
     VolunteerAssistanceTheme {
-        PreRegistrationScreen()
+        PreRegistrationScreen(
+            onEmailRegistrationClick = { }
+        )
     }
 }
