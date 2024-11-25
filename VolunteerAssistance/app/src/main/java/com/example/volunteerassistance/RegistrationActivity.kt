@@ -109,6 +109,15 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
             ) {
                 Text("Далее", fontSize = 18.sp)
             }
+
+            Button(
+                onClick = { },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text("Войти", fontSize = 18.sp)
+            }
         }
     }
 }
