@@ -69,21 +69,7 @@ fun PreRegistrationScreen() {
                     .height(80.dp)
             ) {
                 Text(
-                    "Регистрация при помощи Google",
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center)
-            }
-
-            Button (
-                onClick = { },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-            ) {
-                Text(
-                    "Регистрация при помощи Yandex",
+                    "Регистрация при помощи номера телефона",
                     fontSize = 18.sp,
                     color = Color.White,
                     textAlign = TextAlign.Center)
