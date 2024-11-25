@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.volunteerassistance.ui.theme.State
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 
 class PreRegistrationActivity : ComponentActivity() {
@@ -35,6 +33,10 @@ class PreRegistrationActivity : ComponentActivity() {
                     onEmailRegistrationClick = {
                         val intent = Intent(this, RegistrationActivity::class.java)
                         startActivity(intent)
+                    },
+                    onPhoneRegistrationClick = {
+                        val intent = Intent(this, PhoneRegistrationActivity::class.java)
+                        startActivity(intent)
                     }
                 )
             }
@@ -43,7 +45,7 @@ class PreRegistrationActivity : ComponentActivity() {
 }
 
 @Composable
-fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit ) {
+fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit, onPhoneRegistrationClick: () -> Unit ) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -66,20 +68,20 @@ fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit ) {
                     color = Color.White,
                     textAlign = TextAlign.Center)
             }
-
-            Button (
-                onClick = { },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-            ) {
-                Text(
-                    "Регистрация при помощи номера телефона",
-                    fontSize = 18.sp,
-                    color = Color.White,
-                    textAlign = TextAlign.Center)
-            }
+//
+//            Button (
+//                onClick = { onPhoneRegistrationClick() },
+//                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(80.dp)
+//            ) {
+//                Text(
+//                    "Регистрация при помощи номера телефона",
+//                    fontSize = 18.sp,
+//                    color = Color.White,
+//                    textAlign = TextAlign.Center)
+//            }
         }
     }
 }
@@ -89,7 +91,8 @@ fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit ) {
 fun PreRegistrationScreenPreview() {
     VolunteerAssistanceTheme {
         PreRegistrationScreen(
-            onEmailRegistrationClick = { }
+            onEmailRegistrationClick = { },
+            onPhoneRegistrationClick = { }
         )
     }
 }
