@@ -33,11 +33,11 @@ class PreRegistrationActivity : ComponentActivity() {
                     onEmailRegistrationClick = {
                         val intent = Intent(this, RegistrationActivity::class.java)
                         startActivity(intent)
-                    },
-                    onPhoneRegistrationClick = {
-                        val intent = Intent(this, PhoneRegistrationActivity::class.java)
-                        startActivity(intent)
                     }
+//                    onPhoneRegistrationClick = {
+//                        val intent = Intent(this, PhoneRegistrationActivity::class.java)
+//                        startActivity(intent)
+//                    }
                 )
             }
         }
@@ -45,7 +45,7 @@ class PreRegistrationActivity : ComponentActivity() {
 }
 
 @Composable
-fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit, onPhoneRegistrationClick: () -> Unit ) {
+fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit) {
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -91,8 +91,7 @@ fun PreRegistrationScreen( onEmailRegistrationClick: () -> Unit, onPhoneRegistra
 fun PreRegistrationScreenPreview() {
     VolunteerAssistanceTheme {
         PreRegistrationScreen(
-            onEmailRegistrationClick = { },
-            onPhoneRegistrationClick = { }
+            onEmailRegistrationClick = { }
         )
     }
 }
