@@ -86,7 +86,23 @@ fun LoginScreen() {
 
             Button(
                 onClick = {
+                    val email = emailState.value.trim()
+                    val password = passwordState.value.trim()
 
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(context, "Вход выполнен", Toast.LENGTH_SHORT).show()
+
+                                    //
+                                } else {
+                                    Toast.makeText(context, "Ошибка входа: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    } else {
+                        Toast.makeText(context, "Пожалуйста, заполните все поля для ввода", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
