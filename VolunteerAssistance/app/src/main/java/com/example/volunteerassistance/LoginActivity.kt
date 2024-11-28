@@ -1,3 +1,4 @@
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.volunteerassistance.RegistrationActivity
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -76,15 +78,6 @@ fun LoginScreen() {
             )
 
             Button(
-                onClick = { },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text("Далее", fontSize = 18.sp)
-            }
-
-            Button(
                 onClick = {
                     val email = emailState.value.trim()
                     val password = passwordState.value.trim()
@@ -103,6 +96,18 @@ fun LoginScreen() {
                     } else {
                         Toast.makeText(context, "Пожалуйста, заполните все поля для ввода", Toast.LENGTH_SHORT).show()
                     }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) {
+                Text("Далее", fontSize = 18.sp)
+            }
+
+            Button(
+                onClick = {
+                    val intent = Intent(context, RegistrationActivity::class.java)
+                    context.startActivity(intent)
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.example.volunteerassistance
 
+import LoginActivity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -23,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.volunteerassistance.ui.theme.State
+import com.google.firebase.auth.ktx.auth
 
 class RegistrationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,7 +124,10 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
             }
 
             Button(
-                onClick = { },
+                onClick = {
+                    val intent = Intent(context, LoginActivity::class.java)
+                    context.startActivity(intent)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
