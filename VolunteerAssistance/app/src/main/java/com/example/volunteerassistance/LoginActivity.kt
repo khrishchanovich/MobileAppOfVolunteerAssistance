@@ -1,3 +1,5 @@
+package com.example.volunteerassistance
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -21,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.volunteerassistance.RegistrationActivity
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -119,3 +121,10 @@ fun LoginScreen() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    VolunteerAssistanceTheme {
+        LoginScreen()
+    }
+}
