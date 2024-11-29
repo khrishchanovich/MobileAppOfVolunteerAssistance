@@ -90,7 +90,8 @@ fun LoginScreen() {
                                 if (task.isSuccessful) {
                                     Toast.makeText(context, "Вход выполнен", Toast.LENGTH_SHORT).show()
 
-                                    //
+                                    val intent = Intent(context, ProfileActivity::class.java)
+                                    context.startActivity(intent)
                                 } else {
                                     Toast.makeText(context, "Ошибка входа: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                                 }
