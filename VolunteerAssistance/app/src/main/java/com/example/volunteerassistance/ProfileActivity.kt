@@ -1,6 +1,7 @@
 package com.example.volunteerassistance
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,15 +47,26 @@ fun ProfileScreen() {
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         if (currentUser != null) {
             try {
                 val document = firestore.collection("users").document(currentUser.uid).get().await()
 
-                val user = document.toObject(UserProfile::class.java)
+                val user = document.data?.let { data ->
+                    UserProfile(
+                        name = data["name"] as? String ?: "",
+                        surname = data["surname"] as? String ?: "",
+                        is_help = data["is_help"] as? Boolean ?: false
+                    )
+                }
+
+                Toast.makeText(context, "${document.data}", Toast.LENGTH_SHORT).show()
 
                 if (user != null) {
                     userProfile = user
+                    println("${document.data}")
                 } else {
                     println("User not found in Firestore")
                 }
@@ -86,8 +99,6 @@ fun ProfileScreen() {
 
 @Composable
 fun ProfileContent(user: UserProfile) {
-    println("Current user.isHelp: ${user.is_help}")
-
     Column(
         modifier = Modifier
             .fillMaxSize()
