@@ -112,6 +112,8 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
                     } else {
                         signUp(auth, db, nameState.value, surnameState.value, emailState.value, passwordState.value, context)
 
+                        val intent = Intent(context, ProfileActivity::class.java)
+                        context.startActivity(intent)
                     }
                 },
                 modifier = Modifier

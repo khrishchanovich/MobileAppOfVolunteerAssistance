@@ -73,7 +73,7 @@ fun LoginScreen() {
             TextField(
                 value = passwordState.value,
                 onValueChange = { passwordState.value = it },
-                label = { Text("Почта") },
+                label = { Text("Пароль") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
@@ -90,7 +90,8 @@ fun LoginScreen() {
                                 if (task.isSuccessful) {
                                     Toast.makeText(context, "Вход выполнен", Toast.LENGTH_SHORT).show()
 
-                                    //
+                                    val intent = Intent(context, ProfileActivity::class.java)
+                                    context.startActivity(intent)
                                 } else {
                                     Toast.makeText(context, "Ошибка входа: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                                 }
