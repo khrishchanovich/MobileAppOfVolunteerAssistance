@@ -21,10 +21,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 data class UserProfile(
-    val firstName: String = "",
-    val lastName: String = "",
-    val isHelp: Boolean = false,
-    val profilePicture: String = ""
+    val name: String = "",
+    val surname: String = "",
+    val is_help: Boolean = false
 )
 
 class ProfileActivity : ComponentActivity() {
@@ -50,13 +49,21 @@ fun ProfileScreen() {
         if (currentUser != null) {
             try {
                 val document = firestore.collection("users").document(currentUser.uid).get().await()
+
                 val user = document.toObject(UserProfile::class.java)
-                userProfile = user
+
+                if (user != null) {
+                    userProfile = user
+                } else {
+                    println("User not found in Firestore")
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 isLoading = false
             }
+        } else {
+            isLoading = false
         }
     }
 
@@ -79,6 +86,8 @@ fun ProfileScreen() {
 
 @Composable
 fun ProfileContent(user: UserProfile) {
+    println("Current user.isHelp: ${user.is_help}")
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,14 +106,14 @@ fun ProfileContent(user: UserProfile) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "${user.firstName} ${user.lastName}",
+            text = "${user.name} ${user.surname}",
             fontSize = 24.sp,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (!user.isHelp) {
+        if (!user.is_help) {
             Text(
                 text = "Статус",
                 fontSize = 16.sp,
