@@ -44,6 +44,10 @@
             android:exported="true"
             android:theme="@style/Theme.VolunteerAssistance">
         </activity>
+        <activity android:name=".ProfileActivity"
+            android:exported="true"
+            android:theme="@style/Theme.VolunteerAssistance">
+        </activity>
     </application>
 
 </manifest>
