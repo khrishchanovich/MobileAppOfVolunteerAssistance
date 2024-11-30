@@ -1,6 +1,7 @@
 package com.example.volunteerassistance
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,10 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 data class UserProfile(
-    val firstName: String = "",
-    val lastName: String = "",
-    val isHelp: Boolean = false,
-    val profilePicture: String = ""
+    val name: String = "",
+    val surname: String = "",
+    val is_help: Boolean = false
 )
 
 class ProfileActivity : ComponentActivity() {
@@ -46,17 +47,36 @@ fun ProfileScreen() {
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         if (currentUser != null) {
             try {
                 val document = firestore.collection("users").document(currentUser.uid).get().await()
-                val user = document.toObject(UserProfile::class.java)
-                userProfile = user
+
+                val user = document.data?.let { data ->
+                    UserProfile(
+                        name = data["name"] as? String ?: "",
+                        surname = data["surname"] as? String ?: "",
+                        is_help = data["is_help"] as? Boolean ?: false
+                    )
+                }
+
+                Toast.makeText(context, "${document.data}", Toast.LENGTH_SHORT).show()
+
+                if (user != null) {
+                    userProfile = user
+                    println("${document.data}")
+                } else {
+                    println("User not found in Firestore")
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 isLoading = false
             }
+        } else {
+            isLoading = false
         }
     }
 
@@ -97,14 +117,14 @@ fun ProfileContent(user: UserProfile) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "${user.firstName} ${user.lastName}",
+            text = "${user.name} ${user.surname}",
             fontSize = 24.sp,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (!user.isHelp) {
+        if (!user.is_help) {
             Text(
                 text = "Статус",
                 fontSize = 16.sp,
