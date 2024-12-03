@@ -12,18 +12,19 @@ import androidx.compose.runtime.Composable
 @Composable
 fun BottomBar(
     onMainClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    selectedTab: String
 ) {
     NavigationBar {
         NavigationBarItem(
-            selected = true,
+            selected = selectedTab == "main",
             onClick = onMainClick,
             label = { Text("Main") },
             icon = { Icon(Icons.Default.Home, contentDescription = "Main") }
         )
 
         NavigationBarItem(
-            selected = false,
+            selected = selectedTab == "profile",
             onClick = onProfileClick,
             label = { Text("Profile") },
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
