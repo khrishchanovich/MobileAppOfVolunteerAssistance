@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.example.volunteerassistance"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.volunteerassistance">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Required permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-
-    <!--Required permissions-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <!--Optional permissions-->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <!-- For devices running Android 12 (API level 32) or higher and integrating Agora Voice SDK version v4.1.0 or lower, you also need to add the following permissions -->
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
-    <!-- For Android 12 or higher, the following permissions are also required -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Optional permissions -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- For devices running Android 12 (API level 32) or higher and integrating Agora Voice SDK version v4.1.0 or lower, you also need to add the following permissions -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- For Android 12 or higher, the following permissions are also required -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <application
         android:allowBackup="true"
@@ -35,11 +29,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VolunteerAssistance"
         tools:targetApi="31">
+
         <activity
             android:name=".StartActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.VolunteerAssistance">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,20 +42,19 @@
         <activity
             android:name=".PreRegistrationActivity"
             android:exported="true"
-            android:theme="@style/Theme.VolunteerAssistance">
-        </activity>
-        <activity android:name=".RegistrationActivity"
+            android:theme="@style/Theme.VolunteerAssistance"/>
+        <activity
+            android:name=".RegistrationActivity"
             android:exported="true"
-            android:theme="@style/Theme.VolunteerAssistance">
-        </activity>
-        <activity android:name=".LoginActivity"
+            android:theme="@style/Theme.VolunteerAssistance"/>
+        <activity
+            android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.VolunteerAssistance">
-        </activity>
-        <activity android:name=".ProfileActivity"
+            android:theme="@style/Theme.VolunteerAssistance"/>
+        <activity
+            android:name=".ProfileActivity"
             android:exported="true"
-            android:theme="@style/Theme.VolunteerAssistance">
-        </activity>
+            android:theme="@style/Theme.VolunteerAssistance"/>
     </application>
 
 </manifest>
