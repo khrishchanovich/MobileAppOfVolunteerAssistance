@@ -1,96 +1,58 @@
 package com.example.volunteerassistance
 
-import android.Manifest
+import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.TextView
+import android.widget.Toast
+import android.window.SurfaceSyncGroup
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.compose.ui.unit.sp
+import com.example.volunteerassistance.ui.composable.BottomBar
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import io.agora.agorauikit_android.AgoraConnectionData
-import io.agora.agorauikit_android.AgoraVideoViewer
-import io.agora.rtc2.Constants
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
-import kotlinx.serialization.StringFormat
-import java.util.Collections
-import kotlin.random.Random
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 
-const val APP_ID = "03a4f6b25b2647b89a6d4f2641cb64ab"
+data class UserProfile(
+    val name: String = "",
+    val surname: String = "",
+    val is_help: Boolean = false
+)
 
 class ProfileActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "room_screen"
+                Scaffold(
+                    bottomBar = {
+                        BottomBar(
+                            selectedTab = "profile",
+                            onMainClick = {
+                                startActivity(Intent(this, MainActivity::class.java))
+
+                            },
+                            onProfileClick = { /* Already on ProfileActivity */ }
+                        )
+                    }
+                ) { padding ->
+                    Surface(
+                        modifier = Modifier.padding(padding),
+                        color = MaterialTheme.colorScheme.background
                     ) {
-                        composable(route = "room_screen") {
-                            RoomScreen(onNavigate = navController::navigate)
-                        }
-                        composable(
-                            route = "video_screen/{roomName}",
-                            arguments = listOf(
-                                navArgument(name = "roomName") {
-                                    type = NavType.StringType
-                                }
-                            )
-                        ) {
-                            val roomName = it.arguments?.getString("roomName") ?: return@composable
-                            VideoScreen(
-                                roomName = roomName,
-                                onNavigateUp = navController::navigateUp
-                            )
-                        }
+                        ProfileScreen()
                     }
                 }
             }
@@ -99,218 +61,102 @@ class ProfileActivity : ComponentActivity() {
 }
 
 @Composable
-fun RoomScreen(
-    onNavigate: (String) -> Unit,
-    viewModel: RoomViewModel = viewModel()
-) {
-    LaunchedEffect(key1 = true) {
-        viewModel.onJoinEvent.collectLatest { name ->
-            onNavigate("video_screen/$name")
-        }
-    }
-    val isHelp = viewModel.isHelp.value
-    val roomList = viewModel.roomList.value
+fun ProfileScreen() {
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val firestore = FirebaseFirestore.getInstance()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (isHelp == true) {
-            // Для пользователей с кнопкой Join
-            TextField(
-                value = viewModel.roomName.value.text,
-                onValueChange = viewModel::onRoomEnter,
-                modifier = Modifier.fillMaxWidth(),
-                isError = viewModel.roomName.value.error != null,
-                placeholder = {
-                    Text(text = "Enter a room name")
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        if (currentUser != null) {
+            try {
+                val document = firestore.collection("users").document(currentUser.uid).get().await()
+
+                val user = document.data?.let { data ->
+                    UserProfile(
+                        name = data["name"] as? String ?: "",
+                        surname = data["surname"] as? String ?: "",
+                        is_help = data["is_help"] as? Boolean ?: false
+                    )
                 }
-            )
-            viewModel.roomName.value.error?.let {
-                Text(text = it, color = MaterialTheme.colorScheme.error)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
 
-            Button(onClick = viewModel::onJoinRoom) {
-                Text(text = "Join")
-            }
-        } else if (isHelp == false) {
-            Text(text = "Available Rooms")
-            Spacer(modifier = Modifier.height(16.dp))
+                Toast.makeText(context, "${document.data}", Toast.LENGTH_SHORT).show()
 
-            if (roomList.isEmpty()) {
-                Text(text = "No rooms available")
-            } else {
-                roomList.forEach { room ->
-                    Button(
-                        onClick = { onNavigate("video_screen/$room") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                    ) {
-                        Text(text = "Room: $room")
-                    }
+                if (user != null) {
+                    userProfile = user
+                    println("${document.data}")
+                } else {
+                    println("User not found in Firestore")
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading = false
             }
         } else {
-            Text(text = "Loading...", modifier = Modifier.padding(top = 16.dp))
+            isLoading = false
         }
     }
-}
 
-
-
-class VideoViewModel: ViewModel() {
-    private val _hasAudioPermission = mutableStateOf(false)
-    val hasAudioPermission: State<Boolean> = _hasAudioPermission
-
-    private val _hasCameraPermission = mutableStateOf(false)
-    val hasCameraPermission: State<Boolean> = _hasCameraPermission
-
-    fun onPermissionsResult(
-        acceptedAudioPermission: Boolean,
-        acceptedCameraPermission: Boolean
-    ) {
-        _hasAudioPermission.value = acceptedAudioPermission
-        _hasCameraPermission.value = acceptedCameraPermission
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else {
+        userProfile?.let {
+            ProfileContent(user = it)
+        } ?: run {
+            Text(
+                text = "User profile not found",
+                modifier = Modifier.fillMaxSize(),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
 @Composable
-fun VideoScreen(
-    roomName: String,
-    onNavigateUp: () -> Unit = {},
-    viewModel: VideoViewModel = viewModel()
-) {
-    var agoraView: AgoraVideoViewer? = null
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = { perms ->
-            viewModel.onPermissionsResult(
-                acceptedAudioPermission = perms[Manifest.permission.RECORD_AUDIO] == true,
-                acceptedCameraPermission = perms[Manifest.permission.CAMERA] == true
+fun ProfileContent(user: UserProfile) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            contentDescription = "Фото профиля",
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "${user.name} ${user.surname}",
+            fontSize = 24.sp,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        if (!user.is_help) {
+            Text(
+                text = "Статус",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.error
             )
         }
-    )
-    LaunchedEffect(key1 = true) {
-        permissionLauncher.launch(
-            arrayOf(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA
-            )
-        )
-    }
-    BackHandler {
-        agoraView?.leaveChannel()
-        onNavigateUp()
-    }
-    if (viewModel.hasAudioPermission.value && viewModel.hasCameraPermission.value) {
-        AndroidView(
-            factory = {
-                AgoraVideoViewer(
-                    it, connectionData = AgoraConnectionData(
-                        appId = APP_ID
-                    )
-                ).also {
-                    it.join(roomName)
-                    agoraView = it
-                }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-    }
 
-}
+        Spacer(modifier = Modifier.height(16.dp))
 
-class RoomViewModel : ViewModel() {
-    private val _roomName = mutableStateOf(TextFieldState())
-    val roomName: State<TextFieldState> = _roomName
-
-    private val _onJoinEvent = MutableSharedFlow<String>()
-    val onJoinEvent = _onJoinEvent.asSharedFlow()
-
-    private val _isHelp = mutableStateOf<Boolean?>(null)
-    val isHelp: State<Boolean?> = _isHelp
-
-    private val _roomList = mutableStateOf<List<String>>(emptyList())
-    val roomList: State<List<String>> = _roomList
-
-    init {
-        fetchUserHelpStatus()
-        fetchRoomList()
-    }
-
-    private fun fetchUserHelpStatus() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser!!.uid
-
-        Firebase.firestore.collection("users")
-            .document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                _isHelp.value = document.getBoolean("is_help")
-                if (_isHelp.value == false) {
-                    fetchRoomList()
-                }
-            }
-            .addOnFailureListener {
-                _isHelp.value = false
-            }
-    }
-
-    private fun fetchRoomList() {
-        Firebase.firestore.collection("rooms")
-            .get()
-            .addOnSuccessListener { documents ->
-                val rooms = documents.mapNotNull { it.getString("roomName") }
-                _roomList.value = rooms
-            }
-            .addOnFailureListener {
-                _roomList.value = emptyList()
-            }
-    }
-
-    fun onRoomEnter(name: String) {
-        _roomName.value = roomName.value.copy(
-            text = name
-        )
-    }
-
-    fun onJoinRoom() {
-        if (roomName.value.text.isBlank()) {
-            _roomName.value = roomName.value.copy(
-                error = "The room can't be empty"
-            )
-            return
+        Button(onClick = {}) {
+            Text(text = "Редактировать")
         }
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser!!.uid
-
-        val roomData = mapOf(
-            "roomName" to userId, // UID пользователя
-            "timestamp" to System.currentTimeMillis()
-        )
-
-        Firebase.firestore.collection("rooms")
-            .document(userId)
-            .set(roomData)
-            .addOnSuccessListener {
-                viewModelScope.launch {
-                    _onJoinEvent.emit(userId) // UID передается как имя комнаты
-                }
-            }
-            .addOnFailureListener {
-                _roomName.value = roomName.value.copy(
-                    error = "Failed to create the room"
-                )
-            }
     }
 }
-
-
-data class TextFieldState(
-    val text: String = "",
-    val error: String? = null
-)

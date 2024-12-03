@@ -112,7 +112,7 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
                     } else {
                         signUp(auth, db, nameState.value, surnameState.value, emailState.value, passwordState.value, context)
 
-                        val intent = Intent(context, ProfileActivity::class.java)
+                        val intent = Intent(context, MainActivity::class.java)
                         context.startActivity(intent)
                     }
                 },
