@@ -71,6 +71,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         BottomBar(
+                            selectedTab = "main",
                             onProfileClick = {
                                 startActivity(Intent(this, ProfileActivity::class.java))
                             },

@@ -11,9 +11,9 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun BottomBar(
+    selectedTab: String,
     onMainClick: () -> Unit,
     onProfileClick: () -> Unit,
-    selectedTab: String
 ) {
     NavigationBar {
         NavigationBarItem(
