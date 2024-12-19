@@ -1,0 +1,28 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam nodesep 100
+skinparam ranksep 120
+
+package "Android App" {
+    [Splash Screen] --> [Start Screen]
+    [Splash Screen] --> [Main Activity] : "Initialize main flow"
+
+    [Start Screen] --> [Registration Screen] : "Navigate to"
+    [Registration Screen] <--> [Login Screen] : "Switch to login"
+    [Registration Screen] --> [Profile Screen] : "On success"
+
+    [Login Screen] --> [Profile Screen] : "On success"
+    [Login Screen] -- "Firebase Auth : Authenticate"
+    [Registration Screen] -- "Firestore Database : saved data"
+    [Profile Screen] -- "Firestore Database : fetch user data"
+
+    [Main Activity] -- "Agora : Video session"
+}
+
+package "Navigation Components" {
+    [Bottom Navigation Bar] ..> [Main Activity] : "Switch to Main"
+    [Bottom Navigation Bar] ..> [Profile Screen] : "Switch to Profile"
+}
+
+@enduml

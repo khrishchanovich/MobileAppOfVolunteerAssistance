@@ -42,9 +42,8 @@ class ProfileActivity : ComponentActivity() {
                             selectedTab = "profile",
                             onMainClick = {
                                 startActivity(Intent(this, MainActivity::class.java))
-
                             },
-                            onProfileClick = { /* Already on ProfileActivity */ }
+                            onProfileClick = { }
                         )
                     }
                 ) { padding ->
@@ -120,6 +119,8 @@ fun ProfileScreen() {
 
 @Composable
 fun ProfileContent(user: UserProfile) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,5 +159,14 @@ fun ProfileContent(user: UserProfile) {
         Button(onClick = {}) {
             Text(text = "Редактировать")
         }
+        Button(onClick = {
+            FirebaseAuth.getInstance().signOut()
+            val intent = Intent(context, StartActivity::class.java)
+            context.startActivity(intent)
+            (context as? ProfileActivity)?.finish()
+        }) {
+            Text(text = "Выход")
+        }
     }
 }
+

@@ -1,18 +1,14 @@
 ﻿package com.example.volunteerassistance
-
+import TestRoomViewModelFalse
+import TestRoomViewModelTrue
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,17 +21,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,15 +46,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import io.agora.agorauikit_android.AgoraConnectionData
 import io.agora.agorauikit_android.AgoraVideoViewer
-import io.agora.rtc2.Constants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
-import kotlinx.serialization.StringFormat
-import java.util.Collections
-import kotlin.random.Random
 
 const val APP_ID = "03a4f6b25b2647b89a6d4f2641cb64ab"
 
@@ -68,22 +58,27 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
+                val navController = rememberNavController()
+
+                val currentRoute = navController.currentBackStackEntry?.destination?.route
+
                 Scaffold(
                     bottomBar = {
-                        BottomBar(
-                            selectedTab = "main",
-                            onProfileClick = {
-                                startActivity(Intent(this, ProfileActivity::class.java))
-                            },
-                            onMainClick = { }
-                        )
+                        if (currentRoute != "video_screen/{roomName}") {
+                            BottomBar(
+                                selectedTab = "main",
+                                onProfileClick = {
+                                    startActivity(Intent(this, ProfileActivity::class.java))
+                                },
+                                onMainClick = { }
+                            )
+                        }
                     }
                 ) { padding ->
                     Surface(
                         color = MaterialTheme.colorScheme.background,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(padding)
                     ) {
-                        val navController = rememberNavController()
                         NavHost(
                             navController = navController,
                             startDestination = "room_screen"
@@ -94,15 +89,12 @@ class MainActivity : ComponentActivity() {
                             composable(
                                 route = "video_screen/{roomName}",
                                 arguments = listOf(
-                                    navArgument(name = "roomName") {
-                                        type = NavType.StringType
-                                    }
+                                    navArgument(name = "roomName") { type = NavType.StringType }
                                 )
                             ) {
                                 val roomName = it.arguments?.getString("roomName") ?: return@composable
                                 VideoScreen(
-                                    roomName = roomName,
-                                    onNavigateUp = navController::navigateUp
+                                    roomName = roomName
                                 )
                             }
                         }
@@ -133,30 +125,20 @@ fun RoomScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (isHelp == true) {
-            // Для пользователей с кнопкой Join
-            TextField(
-                value = viewModel.roomName.value.text,
-                onValueChange = viewModel::onRoomEnter,
-                modifier = Modifier.fillMaxWidth(),
-                isError = viewModel.roomName.value.error != null,
-                placeholder = {
-                    Text(text = "Enter a room name")
-                }
-            )
             viewModel.roomName.value.error?.let {
                 Text(text = it, color = MaterialTheme.colorScheme.error)
             }
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = viewModel::onJoinRoom) {
-                Text(text = "Join")
+                Text(text = "Помощь по видеозвонку")
             }
         } else if (isHelp == false) {
-            Text(text = "Available Rooms")
+            Text(text = "Возможно, здесь требуется помощь")
             Spacer(modifier = Modifier.height(16.dp))
 
             if (roomList.isEmpty()) {
-                Text(text = "No rooms available")
+                Text(text = "Все хорошо. Помощь не требуется")
             } else {
                 roomList.forEach { room ->
                     Button(
@@ -165,16 +147,128 @@ fun RoomScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     ) {
-                        Text(text = "Room: $room")
+                        Text(text = "Комната: $room")
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = viewModel::fetchRoomList) {
+                Text(text = "Обновить список")
+            }
         } else {
-            Text(text = "Loading...", modifier = Modifier.padding(top = 16.dp))
+            Text(text = "Загрузка...", modifier = Modifier.padding(top = 16.dp))
         }
     }
 }
 
+
+@Composable
+fun TestRoomScreenFalse(
+    onNavigate: (String) -> Unit,
+    viewModel: TestRoomViewModelFalse = viewModel()
+) {
+    LaunchedEffect(key1 = true) {
+        viewModel.onJoinEvent.collectLatest { name ->
+            onNavigate("video_screen/$name")
+        }
+    }
+    val isHelp = viewModel.isHelp.value
+    val roomList = viewModel.roomList.value
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (isHelp == true) {
+            viewModel.roomName.value.error?.let {
+                Text(text = it, color = MaterialTheme.colorScheme.error)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(onClick = viewModel::onJoinRoom) {
+                Text(text = "Помощь по видеозвонку")
+            }
+        } else if (isHelp == false) {
+            Text(text = "Возможно, здесь требуется помощь")
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (roomList.isEmpty()) {
+                Text(text = "Все хорошо. Помощь не требуется")
+            } else {
+                roomList.forEach { room ->
+                    Button(
+                        onClick = { onNavigate("video_screen/$room") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text(text = "Комната: $room")
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = viewModel::fetchRoomList) {
+                Text(text = "Обновить список")
+            }
+        } else {
+            Text(text = "Загрузка...", modifier = Modifier.padding(top = 16.dp))
+        }
+    }
+}
+
+@Composable
+fun TestRoomScreenTrue(
+    onNavigate: (String) -> Unit,
+    viewModel: TestRoomViewModelTrue = viewModel()
+) {
+    LaunchedEffect(key1 = true) {
+        viewModel.onJoinEvent.collectLatest { name ->
+            onNavigate("video_screen/$name")
+        }
+    }
+    val isHelp = viewModel.isHelp.value
+    val roomList = viewModel.roomList.value
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (isHelp == true) {
+
+        } else if (isHelp == false) {
+            Text(text = "Возможно, здесь требуется помощь")
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (roomList.isEmpty()) {
+                Text(text = "Все хорошо. Помощь не требуется")
+            } else {
+                roomList.forEach { room ->
+                    Button(
+                        onClick = { onNavigate("video_screen/$room") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text(text = "Комната: $room")
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = viewModel::fetchRoomList) {
+                Text(text = "Обновить список")
+            }
+        } else {
+            Text(text = "Загрузка...", modifier = Modifier.padding(top = 16.dp))
+        }
+    }
+}
 
 
 class VideoViewModel: ViewModel() {
@@ -196,10 +290,13 @@ class VideoViewModel: ViewModel() {
 @Composable
 fun VideoScreen(
     roomName: String,
-    onNavigateUp: () -> Unit = {},
-    viewModel: VideoViewModel = viewModel()
+    viewModel: VideoViewModel = viewModel(),
+    roomViewModel: RoomViewModel = viewModel()
 ) {
+    Text(text = "VideoScreen for $roomName")
+    val context = LocalContext.current
     var agoraView: AgoraVideoViewer? = null
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { perms ->
@@ -217,10 +314,32 @@ fun VideoScreen(
             )
         )
     }
-    BackHandler {
+
+    val onChannelLeave = {
+        // Выход из канала Agora
         agoraView?.leaveChannel()
-        onNavigateUp()
+
+        // Если у пользователя есть помощь, удаляем комнату
+        if (roomViewModel.isHelp.value == true) {
+            roomViewModel.deleteRoom(roomName)
+        }
+
+        // Переход в MainActivity после завершения звонка
+        val intent = Intent(context, MainActivity::class.java)
+        context.startActivity(intent)
     }
+
+    BackHandler(enabled = true) {
+        agoraView?.leaveChannel()
+
+        if (roomViewModel.isHelp.value == true) {
+            roomViewModel.deleteRoom(roomName)
+        }
+
+        val intent = Intent(context, MainActivity::class.java)
+        context.startActivity(intent)
+    }
+
     if (viewModel.hasAudioPermission.value && viewModel.hasCameraPermission.value) {
         AndroidView(
             factory = {
@@ -235,9 +354,14 @@ fun VideoScreen(
             },
             modifier = Modifier.fillMaxSize()
         )
+        DisposableEffect(Unit) {
+            onDispose {
+                onChannelLeave()
+            }
+        }
     }
-
 }
+
 
 class RoomViewModel : ViewModel() {
     private val _roomName = mutableStateOf(TextFieldState())
@@ -257,9 +381,14 @@ class RoomViewModel : ViewModel() {
         fetchRoomList()
     }
 
-    private fun fetchUserHelpStatus() {
+    fun fetchUserHelpStatus() {
         val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            _isHelp.value = false  // Пользователь не авторизован, можно задать значение по умолчанию
+            return
+        }
         val userId = currentUser!!.uid
+
 
         Firebase.firestore.collection("users")
             .document(userId)
@@ -275,7 +404,7 @@ class RoomViewModel : ViewModel() {
             }
     }
 
-    private fun fetchRoomList() {
+    fun fetchRoomList() {
         Firebase.firestore.collection("rooms")
             .get()
             .addOnSuccessListener { documents ->
@@ -287,24 +416,23 @@ class RoomViewModel : ViewModel() {
             }
     }
 
-    fun onRoomEnter(name: String) {
-        _roomName.value = roomName.value.copy(
-            text = name
-        )
+    fun deleteRoom(roomName: String) {
+        Firebase.firestore.collection("rooms")
+            .document(roomName)
+            .delete()
+            .addOnSuccessListener {
+            }
+            .addOnFailureListener { exception ->
+                println("Ошибка при удалении комнаты: ${exception.message}")
+            }
     }
 
     fun onJoinRoom() {
-        if (roomName.value.text.isBlank()) {
-            _roomName.value = roomName.value.copy(
-                error = "The room can't be empty"
-            )
-            return
-        }
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userId = currentUser!!.uid
 
         val roomData = mapOf(
-            "roomName" to userId, // UID пользователя
+            "roomName" to userId,
             "timestamp" to System.currentTimeMillis()
         )
 

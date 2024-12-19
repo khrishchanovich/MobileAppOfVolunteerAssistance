@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.volunteerassistance.ui.registrationForNeedHelp.RegistrationActivity
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore

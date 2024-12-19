@@ -1,0 +1,61 @@
+@startuml
+
+class State {
+    + isHelp: Boolean
+}
+
+class UserProfile {
+    + name: String
+    + surname: String
+    + is_help: Boolean
+}
+
+class ProfileActivity {
+    + onCreate(): void
+    + fetchProfile(): void
+}
+
+class RegistrationActivity {
+    + onCreate(): void
+}
+
+class SplashActivity {
+    + onCreate(): void
+}
+
+class StartActivity {
+    + onCreate(): void
+}
+
+class FirebaseAuth {
+    + currentUser: FirebaseUser
+    + createUserWithEmailAndPassword(email: String, password: String): Task<AuthResult>
+    + signOut(): void
+}
+
+class FirebaseFirestore {
+    + collection(name: String): CollectionReference
+}
+
+class MainActivity {
+    + onCreate(): void
+}
+
+class BottomBar {
+    + selectedTab: String
+    + onMainClick(): void
+    + onProfileClick(): void
+}
+
+ProfileActivity --> UserProfile : "fetches"
+RegistrationActivity --> FirebaseAuth : "uses"
+RegistrationActivity --> FirebaseFirestore : "writes to"
+SplashActivity --> FirebaseAuth : "checks"
+SplashActivity --> ProfileActivity : "navigates to"
+SplashActivity --> StartActivity : "navigates to"
+StartActivity --> RegistrationActivity : "navigates to"
+StartActivity --> FirebaseAuth : "uses"
+BottomBar --> MainActivity : "navigates to"
+BottomBar --> ProfileActivity : "navigates to"
+
+@enduml

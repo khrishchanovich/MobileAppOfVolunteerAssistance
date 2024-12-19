@@ -1,4 +1,4 @@
-package com.example.volunteerassistance
+package com.example.volunteerassistance.ui.registrationForNeedHelp
 
 import android.content.Context
 import android.content.Intent
@@ -20,6 +20,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.volunteerassistance.LoginActivity
+import com.example.volunteerassistance.MainActivity
+import com.example.volunteerassistance.PreRegistrationActivity
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
@@ -32,7 +35,10 @@ class RegistrationActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
-                RegistrationScreen { }
+                RegistrationScreen {
+                    val intent = Intent(this, NameActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
     }
@@ -138,7 +144,7 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
     }
 }
 
-private fun signUp(auth: FirebaseAuth, db: FirebaseFirestore, name: String, surname: String, email: String, password: String, context: Context) {
+fun signUp(auth: FirebaseAuth, db: FirebaseFirestore, name: String, surname: String, email: String, password: String, context: Context) {
     auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener {
             if (it.isSuccessful) {

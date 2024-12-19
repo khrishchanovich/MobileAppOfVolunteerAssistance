@@ -23,14 +23,20 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        debug {
+            enableAndroidTestCoverage = true
+        }
     }
 
+
     buildFeatures {
+        compose = true
         viewBinding = true
     }
 
@@ -44,6 +50,8 @@ android {
     buildFeatures {
         compose = true
     }
+
+
 }
 
 dependencies {
@@ -65,11 +73,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.ui.test.junit4.android)
+    implementation(libs.androidx.espresso.intents)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -86,4 +94,18 @@ dependencies {
     implementation("com.github.AgoraIO-Community.VideoUIKit-Android:final:v4.0.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:+")
 
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+
+    // Другие зависимости
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.5")
+
+    // Для работы с Mockito
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    androidTestImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+
+    testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
+    testImplementation("org.powermock:powermock-module-junit4:2.0.9")
+
+    testImplementation("org.robolectric:robolectric:4.9")
 }
