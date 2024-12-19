@@ -1,8 +1,10 @@
 package com.example.volunteerassistance.ui.registrationForNeedHelp
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,7 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volunteerassistance.MainActivity
+import com.example.volunteerassistance.ProfileActivity
 import com.example.volunteerassistance.R
+import com.example.volunteerassistance.ui.theme.State
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -57,11 +61,7 @@ class PasswordActivity : ComponentActivity() {
                     name = name,
                     surname = surname,
                     email = email,
-                    onNextClick = { password ->
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    },
+
                     onSpeakClick = {
                         if (::textToSpeech.isInitialized) {
                             speakText("Введите ваш пароль на поле ниже. После нажмите на синюю кнопку для дальнейшей регистрации.")
@@ -91,7 +91,6 @@ fun PasswordScreen(
     name: String,
     surname: String,
     email: String,
-    onNextClick: (String) -> Unit,
     onSpeakClick: () -> Unit,
 ) {
     val auth = Firebase.auth
@@ -121,9 +120,16 @@ fun PasswordScreen(
             ) {
                 Text("🔊", color = Color.White, fontSize = 24.sp, textAlign = TextAlign.Center)
             }
+        }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 "Введите пароль:",
                 fontSize = 32.sp,
@@ -157,9 +163,6 @@ fun PasswordScreen(
                         Toast.makeText(context, "Пароль должен содержать не менее 6 символов", Toast.LENGTH_SHORT).show()
                     } else {
                         signUp(auth, db, nameState.value, surnameState.value, emailState.value, passwordState.value, context)
-
-                        val intent = Intent(context, MainActivity::class.java)
-                        context.startActivity(intent)
                     }
                 },
                 modifier = Modifier

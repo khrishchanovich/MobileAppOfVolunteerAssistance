@@ -36,6 +36,7 @@ class ProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerAssistanceTheme {
+
                 Scaffold(
                     bottomBar = {
                         BottomBar(

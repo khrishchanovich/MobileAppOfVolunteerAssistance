@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volunteerassistance.LoginActivity
 import com.example.volunteerassistance.MainActivity
-import com.example.volunteerassistance.PreRegistrationActivity
+import com.example.volunteerassistance.ProfileActivity
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
@@ -36,7 +36,7 @@ class RegistrationActivity : ComponentActivity() {
         setContent {
             VolunteerAssistanceTheme {
                 RegistrationScreen {
-                    val intent = Intent(this, NameActivity::class.java)
+                    val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 }
             }
@@ -118,8 +118,8 @@ fun RegistrationScreen(onNextClick: () -> Unit) {
                     } else {
                         signUp(auth, db, nameState.value, surnameState.value, emailState.value, passwordState.value, context)
 
-                        val intent = Intent(context, MainActivity::class.java)
-                        context.startActivity(intent)
+//                        val intent = Intent(context, MainActivity::class.java)
+//                        context.startActivity(intent)
                     }
                 },
                 modifier = Modifier
@@ -168,6 +168,9 @@ fun signUp(auth: FirebaseAuth, db: FirebaseFirestore, name: String, surname: Str
                         .addOnSuccessListener {
                             Log.d("Firestore", "Data saved successfully")
                             Toast.makeText(context, "Регистрация успешна!", Toast.LENGTH_SHORT).show()
+
+                            val intent = Intent(context, ProfileActivity::class.java)
+                            context.startActivity(intent)
                         }
                         .addOnFailureListener { e ->
                             Log.e("Firestore", "Error writing data: ${e.message}")
@@ -189,4 +192,3 @@ fun RegistrationScreenPreview() {
         RegistrationScreen { }
     }
 }
-
