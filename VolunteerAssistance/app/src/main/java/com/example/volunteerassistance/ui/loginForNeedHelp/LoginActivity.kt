@@ -47,7 +47,6 @@ class LoginActivity : ComponentActivity() {
 @Composable
 fun LoginScreen() {
     val auth = Firebase.auth
-    val db = FirebaseFirestore.getInstance()
 
     val emailState = remember { mutableStateOf("") }
     val passwordState = remember { mutableStateOf("") }

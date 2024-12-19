@@ -40,6 +40,14 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.loginForNeedHelp.EmailLoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.VolunteerAssistance"/>
+        <activity
+            android:name=".ui.loginForNeedHelp.PasswordLoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.VolunteerAssistance"/>
+        <activity
             android:name=".ui.registrationForNeedHelp.SurnameActivity"
             android:exported="true"
             android:theme="@style/Theme.VolunteerAssistance"/>
