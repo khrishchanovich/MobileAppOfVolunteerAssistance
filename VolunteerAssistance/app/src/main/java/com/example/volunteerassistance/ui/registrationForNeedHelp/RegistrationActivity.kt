@@ -20,7 +20,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.volunteerassistance.LoginActivity
+import com.example.volunteerassistance.ui.loginForNeedHelp.LoginActivity
 import com.example.volunteerassistance.MainActivity
 import com.example.volunteerassistance.ProfileActivity
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme

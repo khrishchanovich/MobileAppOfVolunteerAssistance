@@ -68,7 +68,7 @@
             android:exported="true"
             android:theme="@style/Theme.VolunteerAssistance"/>
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.loginForNeedHelp.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.VolunteerAssistance"/>
         <activity
