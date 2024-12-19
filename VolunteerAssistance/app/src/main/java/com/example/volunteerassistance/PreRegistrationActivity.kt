@@ -22,6 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.volunteerassistance.ui.registrationForNeedHelp.NameActivity
+import com.example.volunteerassistance.ui.registrationForNeedHelp.RegistrationActivity
+import com.example.volunteerassistance.ui.theme.State
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 
 class PreRegistrationActivity : ComponentActivity() {
@@ -31,8 +34,14 @@ class PreRegistrationActivity : ComponentActivity() {
             VolunteerAssistanceTheme {
                 PreRegistrationScreen(
                     onEmailRegistrationClick = {
-                        val intent = Intent(this, RegistrationActivity::class.java)
-                        startActivity(intent)
+                        if (State.isHelp) {
+                            val intent = Intent(this, NameActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            val intent = Intent(this, RegistrationActivity::class.java)
+                            startActivity(intent)
+                        }
+
                     }
 //                    onPhoneRegistrationClick = {
 //                        val intent = Intent(this, PhoneRegistrationActivity::class.java)
