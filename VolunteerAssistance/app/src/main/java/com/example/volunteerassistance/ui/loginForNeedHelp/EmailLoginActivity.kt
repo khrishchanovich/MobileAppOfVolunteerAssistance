@@ -1,14 +1,11 @@
-package com.example.volunteerassistance.ui.registrationForNeedHelp
+package com.example.volunteerassistance.ui.loginForNeedHelp
 
-import androidx.activity.compose.setContent
-import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import android.content.Intent
 import android.os.Bundle
-import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,39 +14,32 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.volunteerassistance.R
+import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import java.util.Locale
 
-class SurnameActivity : ComponentActivity() {
+
+class EmailLoginActivity : ComponentActivity() {
     private lateinit var textToSpeech: TextToSpeech
-
-    private val spokenSurname = mutableStateOf("")
-
-    private val speechRecognizerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-        val spokenText = matches?.getOrNull(0) ?: ""
-        spokenSurname.value = spokenText
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,27 +52,24 @@ class SurnameActivity : ComponentActivity() {
             }
         }
 
-        val name = intent.getStringExtra("NAME") ?: ""
-
         setContent {
             VolunteerAssistanceTheme {
-                SurnameScreen(
-                    name = name,
-                    surnameState = spokenSurname,
-                    onNextClick = { surname ->
-                        val intent = Intent(this, EmailActivity::class.java).apply {
-                            putExtra("NAME", name)
-                            putExtra("SURNAME", surname)
+                EmailLoginScreen(
+                    onNextClick = { email ->
+                        val intent = Intent(this, PasswordLoginActivity::class.java).apply {
+                            putExtra("EMAIL", email)
                         }
                         startActivity(intent)
                     },
                     onSpeakClick = {
-                        speakText("Введите вашу фамилию на поле ниже или используйте зелёную голосовую кнопку. После нажмите на синюю кнопку для дальнейшей регистрации.")
-                    },
-                    onVoiceInputClick = { startVoiceInput() }
+                        if (::textToSpeech.isInitialized) {
+                            speakText("Введите вашу почту на поле ниже. После нажмите на синюю кнопку для дальнейшего входа.")
+                        }
+                    }
                 )
             }
         }
+
     }
 
     private fun speakText(text: String) {
@@ -90,15 +77,6 @@ class SurnameActivity : ComponentActivity() {
             textToSpeech.stop()
         }
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-    }
-
-    private fun startVoiceInput() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Скажите вашу фамилию")
-        }
-        speechRecognizerLauncher.launch(intent)
     }
 
     override fun onDestroy() {
@@ -109,13 +87,11 @@ class SurnameActivity : ComponentActivity() {
 }
 
 @Composable
-fun SurnameScreen(
-    name: String,
-    surnameState: MutableState<String>,
+fun EmailLoginScreen(
     onNextClick: (String) -> Unit,
     onSpeakClick: () -> Unit,
-    onVoiceInputClick: () -> Unit
 ) {
+    val emailState = remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Scaffold { padding ->
@@ -146,46 +122,37 @@ fun SurnameScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+//            Text("Имя: $name", fontSize = 18.sp)
+//            Text("Фамилия: $surname", fontSize = 18.sp)
             Text(
-                "Введите фамилию:",
+                "Введите почту:",
                 fontSize = 32.sp,
                 color = colorResource(id = R.color.black),
                 modifier = Modifier
                     .fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-
             TextField(
-                value = surnameState.value,
-                onValueChange = { surnameState.value = it },
-                label = { Text("Фамилия", fontSize = 24.sp) },
+                value = emailState.value,
+                onValueChange = { emailState.value = it },
+                label = { Text("Почта", fontSize = 24.sp) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
                     .height(80.dp),
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(fontSize = 24.sp)
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email
+                )
             )
-
-            // Кнопка для голосового ввода
-            Button(
-                onClick = onVoiceInputClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .height(62.dp)
-            ) {
-                Text("🎤", fontSize = 20.sp, color = Color.White)
-            }
-
-            // Кнопка "Далее"
             Button(
                 onClick = {
-                    if (surnameState.value.isBlank()) {
-                        Toast.makeText(context, "Введите фамилию", Toast.LENGTH_SHORT).show()
+                    if (emailState.value.isBlank()) {
+                        Toast.makeText(context, "Введите email", Toast.LENGTH_SHORT).show()
+                    } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(emailState.value).matches()) {
+                        Toast.makeText(context, "Введите корректный email", Toast.LENGTH_SHORT).show()
                     } else {
-                        onNextClick(surnameState.value)
+                        onNextClick(emailState.value)
                     }
                 },
                 modifier = Modifier
