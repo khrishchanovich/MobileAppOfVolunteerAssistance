@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Помоги мне!</string>
+    <string name="your_user_id">Your userID: %s</string>
+</resources>
