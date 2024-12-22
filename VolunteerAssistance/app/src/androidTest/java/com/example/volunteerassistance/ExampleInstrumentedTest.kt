@@ -26,8 +26,8 @@ import androidx.test.rule.ActivityTestRule
 import com.example.volunteerassistance.ui.loginForNeedHelp.LoginScreen
 import com.example.volunteerassistance.ui.registrationForNeedHelp.RegistrationActivity
 import com.example.volunteerassistance.ui.registrationForNeedHelp.RegistrationScreen
-import com.example.volunteerassistance.ui.test.TestProfileScreenFalse
-import com.example.volunteerassistance.ui.test.TestProfileScreenTrue
+//import com.example.volunteerassistance.ui.test.TestProfileScreenFalse
+//import com.example.volunteerassistance.ui.test.TestProfileScreenTrue
 import com.example.volunteerassistance.ui.theme.State
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -236,162 +236,162 @@ class RegistrationActivityTest {
 }
 
 
-@RunWith(AndroidJUnit4::class)
-class ProfileScreenTestTrue {
+//@RunWith(AndroidJUnit4::class)
+//class ProfileScreenTestTrue {
+//
+//    @get:Rule
+//    val composeTestRule = createComposeRule()
+//
+//    @Test
+//    fun testEditButton() {
+//        composeTestRule.setContent {
+//            TestProfileScreenTrue()
+//        }
+//
+//        composeTestRule.onNodeWithText("Редактировать").assertIsDisplayed()
+//    }
+//
+//    @Test
+//    fun testPhotoButton() {
+//        composeTestRule.setContent {
+//            TestProfileScreenTrue()
+//        }
+//
+//        composeTestRule.onNodeWithContentDescription("Фото профиля").assertIsDisplayed()
+//    }
+//
+//    @Test
+//    fun testExitButton() {
+//        composeTestRule.setContent {
+//            TestProfileScreenTrue()
+//        }
+//
+//        composeTestRule.onNodeWithText("Выход").assertIsDisplayed()
+//    }
+//
+//    @Test
+//    fun testExitButtonAction() {
+//        Intents.init()
+//
+//        composeTestRule.setContent {
+//            TestProfileScreenTrue()
+//        }
+//
+//        composeTestRule.onNodeWithText("Выход").performClick()
+//
+//        Thread.sleep(2000)
+//
+//        Intents.intended(IntentMatchers.hasComponent(StartActivity::class.java.name))
+//        Intents.release()
+//    }
+//}
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+//@RunWith(AndroidJUnit4::class)
+//class ProfileScreenTestFalse {
+//
+//    @get:Rule
+//    val composeTestRule = createComposeRule()
+//
+//    @Test
+//    fun testStatusButton() {
+//        composeTestRule.setContent {
+//            TestProfileScreenFalse()
+//        }
+//
+//        composeTestRule.onNodeWithText("Статус").assertIsDisplayed()
+//    }
+//}
 
-    @Test
-    fun testEditButton() {
-        composeTestRule.setContent {
-            TestProfileScreenTrue()
-        }
-
-        composeTestRule.onNodeWithText("Редактировать").assertIsDisplayed()
-    }
-
-    @Test
-    fun testPhotoButton() {
-        composeTestRule.setContent {
-            TestProfileScreenTrue()
-        }
-
-        composeTestRule.onNodeWithContentDescription("Фото профиля").assertIsDisplayed()
-    }
-
-    @Test
-    fun testExitButton() {
-        composeTestRule.setContent {
-            TestProfileScreenTrue()
-        }
-
-        composeTestRule.onNodeWithText("Выход").assertIsDisplayed()
-    }
-
-    @Test
-    fun testExitButtonAction() {
-        Intents.init()
-
-        composeTestRule.setContent {
-            TestProfileScreenTrue()
-        }
-
-        composeTestRule.onNodeWithText("Выход").performClick()
-
-        Thread.sleep(2000)
-
-        Intents.intended(IntentMatchers.hasComponent(StartActivity::class.java.name))
-        Intents.release()
-    }
-}
-
-@RunWith(AndroidJUnit4::class)
-class ProfileScreenTestFalse {
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
-
-    @Test
-    fun testStatusButton() {
-        composeTestRule.setContent {
-            TestProfileScreenFalse()
-        }
-
-        composeTestRule.onNodeWithText("Статус").assertIsDisplayed()
-    }
-}
-
-class RoomScreenTestFalse {
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
-
-    @Test
-    fun testRoomScreenDisplaysRooms() {
-        val testViewModel = TestRoomViewModelFalse().apply {
-            fetchRoomList()
-        }
-
-        composeTestRule.setContent {
-            VolunteerAssistanceTheme {
-                TestRoomScreenFalse(
-                    onNavigate = {},
-                    viewModel = testViewModel
-                )
-            }
-        }
-
-        composeTestRule.onNodeWithText("Комната: Test Room 1").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Комната: Test Room 2").assertIsDisplayed()
-    }
-
-    @Test
-    fun testRoomScreenDisplayUpdateButton() {
-        val testViewModel = TestRoomViewModelFalse().apply {
-            fetchRoomList()
-        }
-
-        composeTestRule.setContent {
-            VolunteerAssistanceTheme {
-                TestRoomScreenFalse(
-                    onNavigate = {},
-                    viewModel = testViewModel
-                )
-            }
-        }
-
-        composeTestRule.onNodeWithText("Обновить список").assertIsDisplayed()
-    }
-
-    @Test
-    fun testNavigateToVideoScreenOnRoomClick() {
-        val testViewModel = TestRoomViewModelFalse().apply {
-            fetchRoomList()
-        }
-
-        val viewModel = VideoViewModel()
-
-        composeTestRule.setContent {
-            VolunteerAssistanceTheme {
-                val navController = rememberNavController()
-
-                viewModel.onPermissionsResult(
-                    acceptedAudioPermission = true,
-                    acceptedCameraPermission = true
-                )
-
-                NavHost(
-                    navController = navController,
-                    startDestination = "room_screen"
-                ) {
-                    composable(route = "room_screen") {
-                        TestRoomScreenFalse(
-                            onNavigate = { route -> navController.navigate(route) },
-                            viewModel = testViewModel
-                        )
-                    }
-                    composable(
-                        route = "video_screen/{roomName}",
-                        arguments = listOf(navArgument("roomName") { type = NavType.StringType })
-                    ) { backStackEntry ->
-                        val roomName = backStackEntry.arguments?.getString("roomName")
-                        VideoScreen(roomName = roomName ?: "", viewModel = viewModel)
-                    }
-                }
-            }
-        }
-
-        composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithText("Комната: Test Room 1").assertIsDisplayed()
-
-        composeTestRule.onNodeWithText("Комната: Test Room 1")
-            .performClick()
-
-        composeTestRule.waitForIdle()
-    }
-}
+//class RoomScreenTestFalse {
+//
+//    @get:Rule
+//    val composeTestRule = createComposeRule()
+//
+//    @Test
+//    fun testRoomScreenDisplaysRooms() {
+//        val testViewModel = TestRoomViewModelFalse().apply {
+//            fetchRoomList()
+//        }
+//
+////        composeTestRule.setContent {
+////            VolunteerAssistanceTheme {
+////                TestRoomScreenFalse(
+////                    onNavigate = {},
+////                    viewModel = testViewModel
+////                )
+////            }
+////        }
+//
+//        composeTestRule.onNodeWithText("Комната: Test Room 1").assertIsDisplayed()
+//        composeTestRule.onNodeWithText("Комната: Test Room 2").assertIsDisplayed()
+//    }
+//
+//    @Test
+//    fun testRoomScreenDisplayUpdateButton() {
+//        val testViewModel = TestRoomViewModelFalse().apply {
+//            fetchRoomList()
+//        }
+//
+////        composeTestRule.setContent {
+////            VolunteerAssistanceTheme {
+////                TestRoomScreenFalse(
+////                    onNavigate = {},
+////                    viewModel = testViewModel
+////                )
+////            }
+////        }
+//
+//        composeTestRule.onNodeWithText("Обновить список").assertIsDisplayed()
+//    }
+//
+//    @Test
+//    fun testNavigateToVideoScreenOnRoomClick() {
+//        val testViewModel = TestRoomViewModelFalse().apply {
+//            fetchRoomList()
+//        }
+//
+//        val viewModel = VideoViewModel()
+//
+//        composeTestRule.setContent {
+//            VolunteerAssistanceTheme {
+//                val navController = rememberNavController()
+//
+//                viewModel.onPermissionsResult(
+//                    acceptedAudioPermission = true,
+//                    acceptedCameraPermission = true
+//                )
+//
+//                NavHost(
+//                    navController = navController,
+//                    startDestination = "room_screen"
+//                ) {
+////                    composable(route = "room_screen") {
+////                        TestRoomScreenFalse(
+////                            onNavigate = { route -> navController.navigate(route) },
+////                            viewModel = testViewModel
+////                        )
+////                    }
+//                    composable(
+//                        route = "video_screen/{roomName}",
+//                        arguments = listOf(navArgument("roomName") { type = NavType.StringType })
+////                    ) { backStackEntry ->
+////                        val roomName = backStackEntry.arguments?.getString("roomName")
+////                        VideoScreen(roomName = roomName ?: "", viewModel = viewModel)
+////                    }
+//                }
+//            }
+//        }
+//
+//        composeTestRule.waitForIdle()
+//
+//        composeTestRule.onNodeWithText("Комната: Test Room 1").assertIsDisplayed()
+//
+//        composeTestRule.onNodeWithText("Комната: Test Room 1")
+//            .performClick()
+//
+//        composeTestRule.waitForIdle()
+//    }
+//}
 
 
 

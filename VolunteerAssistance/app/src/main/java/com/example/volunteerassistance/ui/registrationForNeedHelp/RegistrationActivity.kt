@@ -149,7 +149,7 @@ fun signUp(auth: FirebaseAuth, db: FirebaseFirestore, name: String, surname: Str
         .addOnCompleteListener {
             if (it.isSuccessful) {
                 Log.d("Success", "Sign Up successful")
-                Toast.makeText(context, "Успешно", Toast.LENGTH_SHORT).show()
+                //.makeText(context, "Успешно", Toast.LENGTH_SHORT).show()
 
                 val user = auth.currentUser
 
@@ -174,12 +174,12 @@ fun signUp(auth: FirebaseAuth, db: FirebaseFirestore, name: String, surname: Str
                         }
                         .addOnFailureListener { e ->
                             Log.e("Firestore", "Error writing data: ${e.message}")
-                            Toast.makeText(context, "Ошибка сохранения данных: ${e.message}", Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(context, "Ошибка сохранения данных: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                 }
             } else {
                 Log.d("Fail", "Sign Up failure")
-                Toast.makeText(context, "Ошибище", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Ошибище", Toast.LENGTH_SHORT).show()
             }
         }
 }

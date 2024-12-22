@@ -45,7 +45,7 @@ class PreRegistrationActivity : ComponentActivity() {
             if (status == TextToSpeech.SUCCESS) {
                 textToSpeech.language = Locale.getDefault()
             } else {
-                Toast.makeText(this, "Text-to-Speech не работает", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "Text-to-Speech не работает", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -105,22 +105,24 @@ fun PreRegistrationScreen(
     onSpeakClick: () -> Unit
 ) {
     Scaffold { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = onSpeakClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+        if (State.isHelp) {
+            Column(
                 modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("🔊", color = Color.White, fontSize = 24.sp, textAlign = TextAlign.Center)
+                Button(
+                    onClick = onSpeakClick,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                ) {
+                    Text("🔊", color = Color.White, fontSize = 24.sp, textAlign = TextAlign.Center)
+                }
             }
         }
         Column(

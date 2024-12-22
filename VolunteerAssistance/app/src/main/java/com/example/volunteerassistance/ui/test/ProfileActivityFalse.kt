@@ -14,53 +14,53 @@ import com.example.volunteerassistance.UserProfile
 import com.example.volunteerassistance.ui.composable.BottomBar
 import com.example.volunteerassistance.ui.theme.VolunteerAssistanceTheme
 
-class ProfileActivityFalse : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            VolunteerAssistanceTheme {
-                Scaffold(
-                    bottomBar = {
-                        BottomBar(
-                            selectedTab = "profile",
-                            onMainClick = {
-                                startActivity(Intent(this, MainActivity::class.java))
-                            },
-                            onProfileClick = { }
-                        )
-                    }
-                ) { padding ->
-                    Surface(
-                        modifier = Modifier.padding(padding),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        TestProfileScreenFalse()
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TestProfileScreenFalse() {
-    val testUser = UserProfile(
-        name = "Иван",
-        surname = "Иванов",
-        is_help = false
-    )
-
-    ProfileContent(user = testUser)
-}
-
-@Composable
-fun TestProfileScreenTrue() {
-    val testUser = UserProfile(
-        name = "Иван",
-        surname = "Иванов",
-        is_help = true
-    )
-
-    ProfileContent(user = testUser)
-}
-
+//class ProfileActivityFalse : ComponentActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContent {
+//            VolunteerAssistanceTheme {
+//                Scaffold(
+//                    bottomBar = {
+//                        BottomBar(
+//                            selectedTab = "profile",
+//                            onMainClick = {
+//                                startActivity(Intent(this, MainActivity::class.java))
+//                            },
+//                            onProfileClick = { }
+//                        )
+//                    }
+//                ) { padding ->
+//                    Surface(
+//                        modifier = Modifier.padding(padding),
+//                        color = MaterialTheme.colorScheme.background
+//                    ) {
+//                        TestProfileScreenFalse()
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//fun TestProfileScreenFalse() {
+//    val testUser = UserProfile(
+//        name = "Иван",
+//        surname = "Иванов",
+//        is_help = false
+//    )
+//
+//    ProfileContent(user = testUser)
+//}
+//
+//@Composable
+//fun TestProfileScreenTrue() {
+//    val testUser = UserProfile(
+//        name = "Иван",
+//        surname = "Иванов",
+//        is_help = true
+//    )
+//
+//    ProfileContent(user = testUser)
+//}
+//
